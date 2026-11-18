@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101d35">
+<meta name="description" content="SalonPilot - Gestion simple de votre salon de coiffure">
+<link rel="manifest" href="manifest.webmanifest">
+<title>SalonPilot</title>
+<style>
+:root{--navy:#101d35;--blue:#2563eb;--cyan:#18b6b0;--bg:#f3f6fb;--ink:#172033;--muted:#718096;--line:#e6ebf2}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#101d35,#1b3760);color:white;padding:22px 18px 24px;border-radius:0 0 24px 24px}
+.top{display:flex;justify-content:space-between;align-items:center}.brand{font-size:21px;font-weight:800;letter-spacing:.2px}.brand span{color:#43d6cf}.tag{font-size:11px;color:#c8d7ee;margin-top:3px}
+.pill{border:1px solid #476080;border-radius:20px;padding:7px 10px;font-size:11px;color:#dce8f8}
+h1{font-size:23px;margin:22px 0 4px}header p{margin:0;color:#c5d3e6;font-size:13px}
+main{padding:16px 15px 95px;max-width:760px;margin:auto}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;margin:18px 2px 12px}
+h2{font-size:17px;margin:0}.sub{color:var(--muted);font-size:12px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:-1px}
+.card{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 4px 16px #17203308}
+.statlabel{font-size:12px;color:var(--muted)}.statnum{font-size:23px;font-weight:800;margin-top:7px}.statfoot{font-size:11px;color:#0f9b8e;margin-top:4px}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+button,.btn{border:0;border-radius:12px;padding:12px 14px;background:var(--blue);color:white;font-weight:700;font-size:13px;cursor:pointer}
+button.secondary{background:#edf3ff;color:#2253a5}button.dark{background:var(--navy)}button.danger{background:#fff0f0;color:#c03939}
+.item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
+.avatar{width:38px;height:38px;border-radius:13px;background:#e8f2ff;color:#2253a5;display:grid;place-items:center;font-weight:800;flex:none}
+.itemtitle{font-weight:700;font-size:13px}.itemmeta{font-size:11px;color:var(--muted);margin-top:4px}.amount{font-weight:800;font-size:13px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 4px calc(9px + env(safe-area-inset-bottom));z-index:5}
+nav button{background:transparent;color:#748096;padding:7px 5px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;min-width:58px}
+nav button.active{color:var(--blue)}nav .ico{font-size:19px}
+.page{display:none}.page.active{display:block}
+input,select{width:100%;padding:12px;border:1px solid #dce3ed;border-radius:11px;font:inherit;font-size:13px;background:#fff;color:var(--ink);margin:6px 0 12px}
+label{font-size:12px;font-weight:700;color:#536176}
+.formrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal{position:fixed;inset:0;background:#101d3580;display:none;align-items:flex-end;z-index:10}.modal.show{display:flex}
+.sheet{background:#fff;width:100%;max-width:650px;margin:auto auto 0;border-radius:22px 22px 0 0;padding:20px 18px 28px;max-height:90vh;overflow:auto}
+.sheethead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.close{background:#edf1f7;color:#24344d;padding:8px 11px}
+.empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 8px}
+.notice{background:#eaf8f7;color:#147e78;border-radius:12px;padding:12px;font-size:12px;line-height:1.5;margin-top:14px}
+.smallbtn{padding:7px 10px;font-size:11px}
+@media(min-width:600px){.stats{grid-template-columns:repeat(4,1fr)}.actions{grid-template-columns:repeat(4,1fr)}.sheet{border-radius:22px;margin:auto}}
+</style>
+</head>
+<body>
+<header>
+ <div class="top"><div><div class="brand">Salon<span>Pilot</span></div><div class="tag">Votre salon, mieux organisé</div></div><div class="pill">VERSION DÉMO</div></div>
+ <h1>Bonjour 👋</h1><p>Voici l'activité de votre salon aujourd'hui.</p>
+</header>
+<main>
+ <section id="dashboard" class="page active">
+  <div class="sectionhead"><h2>Vue d'ensemble</h2><span class="sub" id="today"></span></div>
+  <div class="stats">
+   <div class="card"><div class="statlabel">Revenus du jour</div><div class="statnum" id="todayRevenue">0 F</div><div class="statfoot">Paiements enregistrés</div></div>
+   <div class="card"><div class="statlabel">Rendez-vous</div><div class="statnum" id="appointmentsCount">0</div><div class="statfoot">Au total aujourd'hui</div></div>
+   <div class="card"><div class="statlabel">Clients</div><div class="statnum" id="clientsCount">0</div><div class="statfoot">Dans votre fichier</div></div>
+   <div class="card"><div class="statlabel">Dépenses du mois</div><div class="statnum" id="monthExpenses">0 F</div><div class="statfoot">Dépenses saisies</div></div>
+  </div>
+  <div class="sectionhead"><h2>Actions rapides</h2></div>
+  <div class="actions">
+   <button onclick="openForm('appointment')">＋ Rendez-vous</button>
+   <button class="secondary" onclick="openForm('client')">＋ Client</button>
+   <button class="secondary" onclick="openForm('payment')">＋ Paiement</button>
+   <button class="secondary" onclick="openForm('expense')">＋ Dépense</button>
+  </div>
+  <div class="sectionhead"><h2>Prochains rendez-vous</h2><button class="secondary smallbtn" onclick="showPage('appointments')">Tout voir</button></div>
+  <div class="card" id="upcoming"></div>
+  <div class="notice">Vos données de démonstration sont enregistrées sur cet appareil. Cette version ne synchronise pas encore les données entre plusieurs téléphones.</div>
+ </section>
+ <section id="clients" class="page">
+  <div class="sectionhead"><h2>Clients</h2><button onclick="openForm('client')">＋ Ajouter</button></div>
+  <div class="card" id="clientList"></div>
+ </section>
+ <section id="appointments" class="page">
+  <div class="sectionhead"><h2>Rendez-vous</h2><button onclick="openForm('appointment')">＋ Ajouter</button></div>
+  <div class="card" id="appointmentList"></div>
+ </section>
+ <section id="services" class="page">
+  <div class="sectionhead"><h2>Prestations</h2><button onclick="openForm('service')">＋ Ajouter</button></div>
+  <div class="card" id="serviceList"></div>
+ </section>
+ <section id="finance" class="page">
+  <div class="sectionhead"><h2>Finances</h2><button onclick="openForm('payment')">＋ Paiement</button></div>
+  <div class="stats">
+   <div class="card"><div class="statlabel">Total encaissé</div><div class="statnum" id="allRevenue">0 F</div></div>
+   <div class="card"><div class="statlabel">Dépenses</div><div class="statnum" id="allExpenses">0 F</div></div>
+  </div>
+  <div class="sectionhead"><h2>Ajouter une dépense</h2><button class="secondary smallbtn" onclick="openForm('expense')">＋ Dépense</button></div>
+  <div class="card" id="financeList"></div>
+ </section>
+</main>
+<nav>
+ <button class="active" data-page="dashboard" onclick="showPage('dashboard')"><span class="ico">⌂</span>Accueil</button>
+ <button data-page="clients" onclick="showPage('clients')"><span class="ico">♙</span>Clients</button>
+ <button data-page="appointments" onclick="showPage('appointments')"><span class="ico">▦</span>Agenda</button>
+ <button data-page="services" onclick="showPage('services')"><span class="ico">✂</span>Services</button>
+ <button data-page="finance" onclick="showPage('finance')"><span class="ico">◉</span>Finances</button>
+</nav>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet"><div class="sheethead"><h2 id="formTitle">Ajouter</h2><button class="close" onclick="closeModal()">✕</button></div><form id="entryForm"></form></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const read=k=>JSON.parse(localStorage.getItem('sp_'+k)||'[]');
+const save=(k,v)=>localStorage.setItem('sp_'+k,JSON.stringify(v));
+let clients=read('clients'),appointments=read('appointments'),services=read('services'),payments=read('payments'),expenses=read('expenses');
+if(!services.length){services=[{name:'Coupe homme',price:3000},{name:'Tresses',price:10000},{name:'Brushing',price:5000}];save('services',services)}
+const money=n=>Number(n||0).toLocaleString('fr-FR')+' F CFA';
+const dateToday=()=>new Date().toISOString().slice(0,10);
+$('today').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
+function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(p).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));render()}
+function row(title,meta,right=''){return `<div class="item"><div style="display:flex;gap:10px;align-items:center;min-width:0"><div class="avatar">${title.trim().charAt(0).toUpperCase()}</div><div><div class="itemtitle">${esc(title)}</div><div class="itemmeta">${esc(meta)}</div></div></div><div class="amount">${right}</div></div>`}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){
+ clients=read('clients');appointments=read('appointments');services=read('services');payments=read('payments');expenses=read('expenses');
+ const today=dateToday(),month=today.slice(0,7);
+ const revToday=payments.filter(x=>x.date===today).reduce((a,x)=>a+ +x.amount,0),expMonth=expenses.filter(x=>x.date.startsWith(month)).reduce((a,x)=>a+ +x.amount,0);
+ $('todayRevenue').textContent=money(revToday);$('appointmentsCount').textContent=appointments.filter(x=>x.date===today).length;$('clientsCount').textContent=clients.length;$('monthExpenses').textContent=money(expMonth);
+ $('allRevenue').textContent=money(payments.reduce((a,x)=>a+ +x.amount,0));$('allExpenses').textContent=money(expenses.reduce((a,x)=>a+ +x.amount,0));
+ const upcoming=appointments.filter(x=>x.date>=today).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,5);
+ $('upcoming').innerHTML=upcoming.length?upcoming.map(x=>row(x.client,x.date+' à '+x.time+' · '+x.service,money(x.price))).join(''):'<div class="empty">Aucun rendez-vous à venir.</div>';
+ $('clientList').innerHTML=clients.length?clients.map(x=>row(x.name,x.phone||'Aucun téléphone')).join(''):'<div class="empty">Aucun client. Ajoutez votre premier client.</div>';
+ $('appointmentList').innerHTML=appointments.length?appointments.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(x=>row(x.client,x.date+' · '+x.time+' · '+x.service,money(x.price))).join(''):'<div class="empty">Aucun rendez-vous enregistré.</div>';
+ $('serviceList').innerHTML=services.length?services.map(x=>row(x.name,'Prestation',money(x.price))).join(''):'<div class="empty">Aucune prestation.</div>';
+ const fin=[...payments.map(x=>({...x,kind:'Paiement'})),...expenses.map(x=>({...x,kind:'Dépense'}))].sort((a,b)=>b.date.localeCompare(a.date));
+ $('financeList').innerHTML=fin.length?fin.map(x=>row(x.kind+' · '+(x.label||x.client||''),x.date,(x.kind==='Dépense'?'−':'+')+money(x.amount))).join(''):'<div class="empty">Aucune opération financière.</div>';
+}
+function openForm(type){
+ const forms={
+ client:['Nouveau client',`<label>Nom complet</label><input name="name" required placeholder="Ex. Marie Mba"><label>Téléphone</label><input name="phone" placeholder="Ex. 077...">`],
+ appointment:['Nouveau rendez-vous',`<label>Nom du client</label><input name="client" required placeholder="Nom du client"><label>Prestation</label><select name="service">${services.map(s=>`<option value="${esc(s.name)}" data-price="${s.price}">${esc(s.name)} — ${money(s.price)}</option>`).join('')}</select><div class="formrow"><div><label>Date</label><input type="date" name="date" required value="${dateToday()}"></div><div><label>Heure</label><input type="time" name="time" required value="09:00"></div></div><label>Prix (FCFA)</label><input type="number" name="price" min="0" required value="${services[0]?.price||0}">`],
+ service:['Nouvelle prestation',`<label>Nom de la prestation</label><input name="name" required placeholder="Ex. Coupe enfant"><label>Prix en FCFA</label><input type="number" name="price" min="0" required placeholder="5000">`],
+ payment:['Enregistrer un paiement',`<label>Motif / client</label><input name="label" required placeholder="Ex. Coupe - Paul"><label>Montant (FCFA)</label><input type="number" name="amount" min="1" required><label>Date</label><input type="date" name="date" value="${dateToday()}" required>`],
+ expense:['Enregistrer une dépense',`<label>Description</label><input name="label" required placeholder="Ex. Achat de produits"><label>Montant (FCFA)</label><input type="number" name="amount" min="1" required><label>Date</label><input type="date" name="date" value="${dateToday()}" required>`]
+ };
+ $('formTitle').textContent=forms[type][0];$('entryForm').innerHTML=forms[type][1]+`<button type="submit" style="width:100%;margin-top:8px">Enregistrer</button>`;
+ $('entryForm').onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target).entries());
+ if(type==='client')clients.push(d),save('clients',clients);
+ if(type==='appointment')appointments.push(d),save('appointments',appointments);
+ if(type==='service')services.push({...d,price:+d.price}),save('services',services);
+ if(type==='payment')payments.push({...d,amount:+d.amount}),save('payments',payments);
+ if(type==='expense')expenses.push({...d,amount:+d.amount}),save('expenses',expenses);
+ closeModal();render();
+ };
+ if(type==='appointment')$('entryForm').elements.service.onchange=e=>{$('entryForm').elements.price.value=e.target.selectedOptions[0].dataset.price};
+ $('modal').classList.add('show');
+}
+function closeModal(){$('modal').classList.remove('show')}
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+render();
+</script>
+</body></html>
